@@ -15,8 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from backplat.views import DashboardAPIView
+
 
 urlpatterns = [
     path('backplat/', include('backplat.urls')),
     path('admin/', admin.site.urls),
+    path('dashboard/', DashboardAPIView.as_view()),
 ]

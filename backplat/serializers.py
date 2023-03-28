@@ -17,10 +17,14 @@ from .models import TeacherSubject, Group, Subject
 #         self.subject = subject
 
 
-class GroupSerializer(serializers.Serializer):
-    group_name = serializers.CharField(max_length=255)
-    teacher = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all())
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['group_name', 'teacher', 'subject']
+
+    # group_name = serializers.CharField(max_length=255)
+    # teacher = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    # subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all())
 
     def validate_teacher(self, value):
         if value is None:

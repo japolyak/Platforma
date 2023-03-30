@@ -23,9 +23,10 @@ from .serializers import GroupSerializer
 # training class
 class DashboardAPIView(APIView):
     def get(self, request):
-        lst = Group.objects.all()
+        # print(request.data["teacher"])
+        lst = Group.objects.filter(teacher=request.data["teacher"]).order_by("group_name")
 
-        return Response({'group': GroupSerializer(lst, many=True).data})
+        return Response({'groups': GroupSerializer(lst, many=True).data})
     # def get(self, request):
     #     lst = Group.objects.all().values()
     #
@@ -33,29 +34,12 @@ class DashboardAPIView(APIView):
 
     def post(self, request):
         serializer = GroupSerializer(data=request.data)
-        print(request.data)
-        print(serializer.is_valid())
+
         serializer.is_valid(raise_exception=True)
-        teacher_id = request.data['teacher_id']
-        subject_id = request.data['subject_id']
+        serializer.save()
 
-        try:
-            TeacherSubject.objects.get(teacher=teacher_id, subject=subject_id)
 
-        except ObjectDoesNotExist:
-            teacher = User.objects.get(id=teacher_id)
-            return Response(data={'error': f'{teacher.first_name} {teacher.last_name} doesn\'t teach this subject'},
-                            status=400)
-
-        post_new = Group.objects.create(
-            group_name=request.data['group_name'],
-            teacher=User.objects.get(id=teacher_id),
-            subject=Subject.objects.get(id=subject_id)
-        )
-
-        # return Response({'post': model_to_dict(post_new)})
-
-        return Response({'post': GroupSerializer(post_new).data})
+        return Response({'post': serializer.data})
 
 
 def index(request):

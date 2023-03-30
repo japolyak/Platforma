@@ -1,9 +1,11 @@
 import io
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from .models import TeacherSubject, Group, Subject
 
@@ -26,15 +28,33 @@ class GroupSerializer(serializers.ModelSerializer):
     # teacher = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     # subject = serializers.PrimaryKeyRelatedField(queryset=Subject.objects.all())
 
-    def validate_teacher(self, value):
-        if value is None:
-            raise serializers.ValidationError("Teacher field is required.")
-        return value
+    def to_representation(self, instance):  # allows change representation of data only! for GET request
+        print(instance)
+        data = super().to_representation(instance)
+        # print(type(data))
+        return data
 
-    def validate_subject(self, value):
-        if value is None:
-            raise serializers.ValidationError("Subject field is required.")
-        return value
+    def validate(self, data):  # allows to validate the incoming data. if write validate_fieldname - such method validates this field.
+        teacher_id = data["teacher"].id
+        subject_id = data["subject"].id
+
+        try:
+            TeacherSubject.objects.get(teacher=teacher_id, subject=subject_id)
+
+        except ObjectDoesNotExist:
+            teacher = User.objects.get(id=teacher_id)
+            return Response(data={'error': f'{teacher.first_name} {teacher.last_name} doesn\'t teach this subject'},
+                            status=400)
+
+        return data
+
+    def create(self, validated_data):
+        print(validated_data)
+        return Group.objects.create(**validated_data)
+
+
+
+
 
 # def encode():
 #     model = GroupModel('2A', 'Garfield', 'Pie')

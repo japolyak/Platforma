@@ -14,12 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from backplat.views import DashboardAPIView
-
+from django.urls import path, include, re_path
+from backplat.views import GroupListAPI, GroupAPI, SubjectListAPI, AssignmentListAPI
 
 urlpatterns = [
-    path('backplat/', include('backplat.urls')),
     path('admin/', admin.site.urls),
-    path('dashboard/', DashboardAPIView.as_view()),
+    path('group/', GroupListAPI.as_view()),
+    path('group/create/', SubjectListAPI.as_view()),
+    path('group/<int:pk>/', GroupAPI.as_view()),
+    path('group/<int:pk>/home_work/', AssignmentListAPI.as_view()),
+    path('group/<int:pk>/home_work/<int:jk>/', AssignmentListAPI.as_view()),
+    path('ala/auth/', include('djoser.urls')),
+    re_path(r'auth/', include('djoser.urls.authtoken')),
 ]

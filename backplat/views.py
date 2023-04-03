@@ -45,25 +45,16 @@ class GroupListAPI(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset()).filter(teacher=request.user.id)
         serializer = self.get_serializer(queryset, many=True)
-        # group_queryset = self.filter_queryset(self.get_queryset()).filter(teacher=request.user.id)
-        #
-        # # Get the subjects that belong to the current user
-        # teacher_subjects = TeacherSubject.objects.filter(teacher=request.user)
-        #
-        # # Create a dictionary mapping subject IDs to subject names
-        # subject_dict = {subject.id: subject.subject.subject_name for subject in teacher_subjects}
-        # print(subject_dict)
-        # # Serialize the groups and add the subject information to each group
-        # serialized_groups = []
-        # for group in group_queryset:
-        #     serialized_group = self.get_serializer(group).data
-        #     print(serialized_group)
-        #     serialized_group['subject'] = [subject_dict[subject.id] for subject in group.objects.all()]
-        #     serialized_groups.append(serialized_group)
-        #
-        # # Return the serialized data in a response
-        # return Response({"groups": serialized_groups})
+
         return Response({"groups": serializer.data})
+
+    def post(self, request, *args, **kwargs):
+
+        teacher_subject = TeacherSubject.objects.filter(teacher=request.data["teacher"], subject=request.data["subject"])
+
+        if len(teacher_subject) == 0:
+            return Response({"eror": "teacher doesn\'t teach this subject"})
+        return self.create(request, *args, **kwargs)
 
 class GroupAPI(generics.UpdateAPIView,
                generics.DestroyAPIView):

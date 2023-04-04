@@ -15,15 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from backplat.views import GroupListAPI, GroupAPI, SubjectListAPI, AssignmentListAPI
+from backplat.views import GroupListAPI, GroupChangeAPI, SubjectListAPI, AssignmentListAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('group/', GroupListAPI.as_view()),
     path('group/create/', SubjectListAPI.as_view()),
-    path('group/<int:pk>/', GroupAPI.as_view()),
+    path('group/<int:pk>/', GroupChangeAPI.as_view()),
     path('group/<int:pk>/home_work/', AssignmentListAPI.as_view()),
     path('group/<int:pk>/home_work/<int:jk>/', AssignmentListAPI.as_view()),
-    path('ala/auth/', include('djoser.urls')),
+    path('register/auth/', include('djoser.urls')),
     re_path(r'auth/', include('djoser.urls.authtoken')),
 ]

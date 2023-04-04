@@ -3,13 +3,14 @@ from django.forms import model_to_dict
 from rest_framework import generics
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from .models import TeacherSubject, Group, Subject, Assignment
+from .permissions import IsOwnerOrAdminUser
 from .serializers import GroupSerializer, AssignmentSerializer, SubjectSerializer
 
 
@@ -50,17 +51,19 @@ class GroupListAPI(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
 
-        teacher_subject = TeacherSubject.objects.filter(teacher=request.data["teacher"], subject=request.data["subject"])
+        teacher_subject = TeacherSubject.objects.filter(teacher=request.data["teacher"],
+                                                        subject=request.data["subject"])
 
         if len(teacher_subject) == 0:
-            return Response({"eror": "teacher doesn\'t teach this subject"})
+            return Response({"Error": "Teacher doesn\'t teach this subject"}, status=404)
         return self.create(request, *args, **kwargs)
 
-class GroupAPI(generics.UpdateAPIView,
-               generics.DestroyAPIView):
+
+class GroupChangeAPI(generics.UpdateAPIView,
+                     generics.DestroyAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsOwnerOrAdminUser )
 
 
 class AssignmentListAPI(generics.ListCreateAPIView):

@@ -22,8 +22,8 @@ urlpatterns = [
     path('group/', GroupListAPI.as_view()),
     path('group/create/', SubjectListAPI.as_view()),
     path('group/<int:pk>/', GroupChangeAPI.as_view()),
-    path('group/<int:pk>/home_work/', AssignmentListAPI.as_view()),
-    path('group/<int:pk>/home_work/<int:jk>/', AssignmentListAPI.as_view()),
+    path('group/<int:pk>/assignment/', AssignmentListAPI.as_view()),
+    path('group/<int:pk>/assignment/<int:jk>/', AssignmentListAPI.as_view()),
     path('register/auth/', include('djoser.urls')),
     re_path(r'auth/', include('djoser.urls.authtoken')),
 ]

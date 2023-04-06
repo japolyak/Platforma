@@ -1,13 +1,31 @@
 # Plan 1.0
 
 
-1. domain_name/group/ - shows all teacher's groups.(GET, POST) Reading and creating groups.
-2. domain_name/group/create/ - REALIZED. shows all teacher's subjects with their NAMES.
-   (GET) Reading teacher's subjects.
-3. domain_name/group/{group_id} - REALIZED. Updating and deleting group (PUT, DELETE) 
-4. domain_name/group/{group_id}/home_work/ - shows all homeworks of the group.
-   (GET, POST) Reading and adding homeworks.
-5. domain_name/group/{group_id}/home_work/{home_work_id}/ - shows info about homework and student's marks, if they are.
+1. domain_name/group/ - **REALIZED**
+   * GET - get teacher's groups(name, subject)
+   * POST - create new group
+2. domain_name/group/create/ - **REALIZED**
+   * GET - get teacher's subjects(id, name)
+3. domain_name/group/{group_id} - **REALIZED**
+   * PUT - udpate info about group
+   * DELETE - delete group
+4. domain_name/group/{group_id}/student/
+   * GET - get group's students
+5. domain_name/group/{group_id}/home_work/ - **REALIZED**
+   * GET - get assignments of the group
+   * POST - create assignment to the group
+   ```json
+   {
+	  "lol": "int",
+	  "assign_deadline": "str",
+	  "assign_text": "str"
+   }
+   ```
+6. domain_name/group/{group_id}/home_work/{home_work_id}/
    (GET, POST, PUT, DELETE) Reading, adding and updating info about homework and marks.
-6. domain_name/my_subjects/ - show all teachers subjects. (GET, POST) Reading and adding subjects.
-7. domain_name/my_subject/add/ - show all available subjects. (GET) Reading subjects.
+   * GET - get info about assignment
+   * POST - create new group
+   * PUT - 
+   * DELETE - 
+7. domain_name/my_subjects/ - show all teachers subjects. (GET, POST) Reading and adding subjects.
+8. domain_name/my_subject/add/ - show all available subjects. (GET) Reading subjects.

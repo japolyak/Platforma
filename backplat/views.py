@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from .models import TeacherSubject, Group, Subject, Assignment, Mark, StudentGroup
 from .permissions import IsOwnerOrAdminUser
-from .serializers import GroupSerializer, AssignmentSerializer, SubjectSerializer
+from .serializers import GroupSerializer, AssignmentSerializer, SubjectSerializer, AssignmentAllSerializer
 
 
 class SubjectListAPI(generics.ListAPIView):
@@ -42,10 +42,10 @@ class SubjectListAPI(generics.ListAPIView):
         return Response(subjects_dict)
 
 
-class GroupListAPI(generics.ListCreateAPIView):
+class GroupAPI(generics.ListCreateAPIView, generics.UpdateAPIView, generics.DestroyAPIView):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsOwnerOrAdminUser)
 
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset()).filter(teacher=request.user.id)
@@ -62,17 +62,11 @@ class GroupListAPI(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
 
 
-class GroupChangeAPI(generics.UpdateAPIView,
-                     generics.DestroyAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = (IsAuthenticated, IsOwnerOrAdminUser )
-
 
 class AssignmentListAPI(generics.ListCreateAPIView):
     queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated, IsOwnerOrAdminUser)
 
     def get(self, request, *args, **kwargs):
         queryset = get_list_or_404(klass=self.filter_queryset(self.get_queryset()), group=kwargs["pk"])
@@ -92,8 +86,13 @@ class AssignmentListAPI(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
     def check_permission(self, teacher, user):
         if teacher != user and not user.is_staff:
-            raise PermissionDenied("You do not have permission to get this info.")
+            raise PermissionDenied("You do not have permission to perform this action.")
 
+class AssignmentAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        assignment = get_list_or_404(Assignment, id =kwargs["jk"])
+        a = AssignmentAllSerializer(assignment, many=True).data
+        return Response({"assignment": a[0]})
 
 
 # training class

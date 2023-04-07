@@ -13,6 +13,9 @@ class TeacherSubject(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.PROTECT)
     subject = models.ForeignKey(Subject, on_delete=models.PROTECT)
 
+    class Meta:
+        unique_together = ["teacher", "subject"]
+
     def __str__(self):
         full_name = (self.teacher.first_name + '  ' + self.teacher.last_name + ' - ' + self.subject.subject_name)
         return full_name
